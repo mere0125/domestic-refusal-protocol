@@ -6,6 +6,8 @@ const navigationButtons = [...document.querySelectorAll("[data-go]")];
 const previousButtons = [...document.querySelectorAll("[data-prev]")];
 const nextButtons = [...document.querySelectorAll("[data-next]")];
 const indexDialog = document.querySelector("#research-index");
+const argumentDialog = document.querySelector("#argument-map");
+const dialogIsOpen = () => indexDialog.open || argumentDialog.open;
 
 let page = 0;
 let wheelLocked = false;
@@ -40,7 +42,7 @@ previousButtons.forEach((button) => button.addEventListener("click", () => setPa
 nextButtons.forEach((button) => button.addEventListener("click", () => setPage(page + 1)));
 
 window.addEventListener("keydown", (event) => {
-  if (indexDialog.open || event.defaultPrevented) return;
+  if (dialogIsOpen() || event.defaultPrevented) return;
   const activeTag = document.activeElement?.tagName;
   if (["INPUT", "SELECT", "TEXTAREA"].includes(activeTag)) return;
 
@@ -55,7 +57,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("wheel", (event) => {
-  if (indexDialog.open || wheelLocked || event.target.closest("dialog, input")) return;
+  if (dialogIsOpen() || wheelLocked || event.target.closest("dialog, input")) return;
   const amount = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
   if (Math.abs(amount) < 18) return;
 
@@ -80,12 +82,50 @@ window.addEventListener("touchend", (event) => {
   touchStartY = 0;
 }, { passive: true });
 
-document.querySelector("[data-open-index]").addEventListener("click", () => indexDialog.showModal());
+const indexOpenButtons = [...document.querySelectorAll("[data-open-index]")];
+indexOpenButtons.forEach((button) => button.addEventListener("click", () => indexDialog.showModal()));
 document.querySelector("[data-close-index]").addEventListener("click", () => indexDialog.close());
 indexDialog.addEventListener("click", (event) => {
   const bounds = indexDialog.getBoundingClientRect();
   const outside = event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
   if (outside) indexDialog.close();
+});
+
+document.querySelector("[data-open-argument-map]").addEventListener("click", () => argumentDialog.showModal());
+document.querySelector("[data-close-argument-map]").addEventListener("click", () => argumentDialog.close());
+argumentDialog.addEventListener("click", (event) => {
+  const bounds = argumentDialog.getBoundingClientRect();
+  const outside = event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
+  if (outside) argumentDialog.close();
+});
+
+/* Three research lineages share one spread, but each keeps its own visual argument. */
+const contextTabs = [...document.querySelectorAll("[data-context-tab]")];
+const contextPanels = [...document.querySelectorAll("[data-context-panel]")];
+const contextStage = document.querySelector("[data-context-stage]");
+const selectContext = (key, moveFocus = false) => {
+  contextTabs.forEach((button) => {
+    const selected = button.dataset.contextTab === key;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-selected", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    if (selected && moveFocus) button.focus();
+  });
+  contextPanels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.contextPanel === key));
+  if (contextStage) contextStage.dataset.contextStage = key;
+};
+contextTabs.forEach((button, index) => {
+  button.addEventListener("click", () => selectContext(button.dataset.contextTab));
+  button.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    let nextIndex = index;
+    if (event.key === "ArrowLeft") nextIndex = (index - 1 + contextTabs.length) % contextTabs.length;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % contextTabs.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = contextTabs.length - 1;
+    selectContext(contextTabs[nextIndex].dataset.contextTab, true);
+  });
 });
 
 /* The room is still. The cursor reveals where attention and access land. */

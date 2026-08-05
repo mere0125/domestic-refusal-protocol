@@ -432,6 +432,29 @@ em { font-weight: 400; }
 .restart-book { background: var(--graphite); border: 0; bottom: 0; color: var(--paper-bright); font-family: var(--code); font-size: 9px; padding: 17px 21px; position: absolute; right: 0; text-transform: uppercase; }
 
 /* Research drawer */
+.argument-map {
+  background: var(--paper-bright);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  height: min(720px,calc(100svh - 80px));
+  max-height: none;
+  max-width: none;
+  padding: 0;
+  width: min(1280px,calc(100vw - 80px));
+}
+.argument-map::backdrop { backdrop-filter: blur(5px); background: rgba(8,10,10,.72); }
+.argument-map > header { align-items: center; border-bottom: 1px solid var(--ink); display: flex; height: 104px; justify-content: space-between; padding: 0 24px; }
+.argument-map > header span { font-family: var(--code); font-size: 11px; text-transform: uppercase; }
+.argument-map > header h2 { font-family: var(--display); font-size: 43px; font-weight: 400; line-height: 1; }
+.argument-map > header button { background: transparent; border: 1px solid var(--ink); font-size: 27px; height: 44px; width: 44px; }
+.argument-map-grid { display: grid; grid-template-columns: repeat(2,1fr); height: calc(100% - 166px); }
+.argument-map-grid article { align-content: center; display: grid; gap: 18px; padding: 28px 34px; }
+.argument-map-grid article:nth-child(even) { border-left: 1px solid var(--ink); }
+.argument-map-grid article:nth-child(n+3) { border-top: 1px solid var(--ink); }
+.argument-map-grid span { color: var(--ink-soft); font-family: var(--code); font-size: 14px; }
+.argument-map-grid b { font-family: var(--display); font-size: clamp(31px,3.2vw,51px); font-weight: 400; line-height: .98; }
+.argument-map > p { align-items: center; background: var(--graphite); color: var(--paper-bright); display: flex; font-family: var(--code); font-size: 17px; height: 62px; justify-content: center; text-transform: uppercase; }
+
 .research-index { background: var(--paper-bright); border: 1px solid var(--ink); height: calc(100svh - 34px); margin: 17px 17px 17px auto; max-height: none; max-width: 900px; padding: 0; width: min(900px,calc(100vw - 34px)); }
 .research-index::backdrop { background: rgba(8,10,10,.54); backdrop-filter: blur(3px); }
 .index-head { align-items: center; border-bottom: 1px solid var(--ink); display: flex; justify-content: space-between; padding: 20px 24px; }
@@ -552,6 +575,15 @@ em { font-weight: 400; }
   .closing-copy { left: 18px; right: 18px; top: 22%; }
   .closing-copy h2 { font-size: 55px; }
   .closing-receipt { opacity: .65; right: -50px; }
+  .argument-map { height: calc(100svh - 16px); width: calc(100vw - 16px); }
+  .argument-map > header { height: 84px; padding: 0 14px; }
+  .argument-map > header h2 { font-size: 30px; }
+  .argument-map-grid { grid-template-columns: 1fr; height: calc(100% - 136px); overflow-y: auto; }
+  .argument-map-grid article { min-height: 170px; padding: 22px; }
+  .argument-map-grid article:nth-child(even) { border-left: 0; }
+  .argument-map-grid article + article { border-top: 1px solid var(--ink); }
+  .argument-map-grid b { font-size: 30px; }
+  .argument-map > p { font-size: 10px; height: 52px; }
   .research-index { height: calc(100svh - 16px); margin: 8px; width: calc(100vw - 16px); }
   .index-grid { grid-template-columns: 1fr; }
   .index-grid article:nth-child(odd) { border-right: 0; }
@@ -1156,6 +1188,178 @@ em { font-weight: 400; }
   .field-question { height: 34%; left: 46%; }
   .field-methods { grid-template-columns: repeat(4,1fr); }
   .field-methods b { display: none; }
+}
+
+/* Research context: three full-screen lineages inside one dossier page. */
+.context-spread { background: var(--graphite); color: var(--paper-bright); }
+.context-heading { left: 40px; position: absolute; top: 72px; z-index: 5; }
+.context-heading h2 { font-family: var(--display); font-size: 54px; font-weight: 400; line-height: .87; }
+.context-heading em { color: var(--silver); }
+.context-index-trigger {
+  align-items: center;
+  background: transparent;
+  border: 1px solid rgba(248,248,244,.44);
+  color: var(--paper-bright);
+  display: grid;
+  gap: 4px;
+  grid-template-columns: auto auto;
+  padding: 12px 15px;
+  position: absolute;
+  right: 40px;
+  text-align: left;
+  top: 91px;
+  z-index: 8;
+}
+.context-index-trigger span { color: var(--brass); font-family: var(--code); font-size: 12px; text-transform: uppercase; }
+.context-index-trigger b { font-family: var(--code); font-size: 13px; font-weight: 400; text-transform: uppercase; }
+.context-index-trigger:hover { background: var(--paper-bright); color: var(--ink); }
+
+.context-stage {
+  border: 1px solid rgba(248,248,244,.38);
+  bottom: 74px;
+  left: 40px;
+  overflow: hidden;
+  position: absolute;
+  right: 40px;
+  top: 184px;
+}
+.context-panel {
+  display: grid;
+  grid-template-rows: 58px minmax(0,1fr);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(10px);
+  transition: opacity 280ms ease, transform 420ms cubic-bezier(.2,.8,.2,1), visibility 0s linear 420ms;
+  visibility: hidden;
+}
+.context-panel.is-active { opacity: 1; pointer-events: auto; transform: none; transition-delay: 0s; visibility: visible; }
+.context-panel-head {
+  align-items: center;
+  border-bottom: 1px solid rgba(248,248,244,.38);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 18px;
+}
+.context-panel-head span { font-family: var(--display); font-size: 27px; }
+.context-panel-head p { color: rgba(248,248,244,.62); font-family: var(--code); font-size: 13px; text-transform: uppercase; }
+
+.practice-lineage, .theory-lineage { display: grid; min-height: 0; }
+.practice-lineage { grid-template-columns: 1.12fr 1fr 1fr; }
+.practice-lineage figure { min-width: 0; overflow: hidden; position: relative; }
+.practice-lineage figure + figure { border-left: 1px solid rgba(248,248,244,.34); }
+.practice-lineage img { filter: saturate(.65) contrast(1.06) brightness(.8); height: 100%; object-fit: cover; transition: filter 260ms ease, transform 700ms cubic-bezier(.2,.8,.2,1); width: 100%; }
+.practice-lineage figure:hover img { filter: saturate(.88) contrast(1.02) brightness(.92); transform: scale(1.015); }
+.practice-lineage figure:nth-child(1) img { object-position: 50% 48%; }
+.practice-lineage figure:nth-child(2) img { object-position: 58% center; }
+.practice-lineage figure:nth-child(3) img { object-position: center; }
+.practice-lineage figcaption {
+  background: linear-gradient(0deg,rgba(10,12,12,.96),rgba(10,12,12,.72) 62%,transparent);
+  bottom: 0;
+  display: grid;
+  gap: 4px;
+  left: 0;
+  padding: 56px 17px 17px;
+  position: absolute;
+  right: 0;
+}
+.practice-lineage figcaption span { color: var(--brass); font-family: var(--code); font-size: 13px; }
+.practice-lineage figcaption b { font-family: var(--display); font-size: 25px; font-weight: 400; }
+.practice-lineage figcaption i { color: rgba(248,248,244,.72); font-family: var(--code); font-size: 13px; font-style: normal; text-transform: uppercase; }
+
+.context-history { background: #d9dcda; color: var(--ink); }
+.context-history .context-panel-head { border-color: rgba(16,18,18,.32); }
+.context-history .context-panel-head p { color: var(--ink-soft); }
+.history-genealogy { display: grid; grid-template-rows: 34px minmax(0,1fr) 59px; min-height: 0; padding: 0 18px; }
+.history-genealogy-note { align-items: center; border-bottom: 1px solid rgba(16,18,18,.23); display: flex; justify-content: space-between; }
+.history-genealogy-note span, .history-genealogy-note b { font-family: var(--code); font-size: 11px; font-weight: 400; text-transform: uppercase; }
+.history-genealogy-note span { color: var(--brass-dark); }
+.history-archive-track { display: grid; gap: 16px; grid-template-columns: .86fr 1.08fr 1.12fr .94fr; min-height: 0; padding: 12px 0 7px; position: relative; }
+.history-archive-track::before { background: var(--brass-dark); bottom: 81px; content: ""; height: 1px; left: 6px; opacity: .66; position: absolute; right: 6px; }
+.history-archive-track figure { display: grid; grid-template-rows: minmax(0,1fr) 75px; min-height: 0; min-width: 0; position: relative; }
+.history-archive-track figure::after { background: #d9dcda; border: 1px solid var(--brass-dark); border-radius: 50%; bottom: 76px; content: ""; height: 9px; left: 0; position: absolute; width: 9px; }
+.history-archive-frame { background: #ecece6; border: 1px solid rgba(16,18,18,.32); min-height: 0; overflow: hidden; position: relative; }
+.history-archive-track figure:nth-child(2) .history-archive-frame { margin-top: 13px; }
+.history-archive-track figure:nth-child(3) .history-archive-frame { margin-top: 5px; }
+.history-archive-track figure:nth-child(4) .history-archive-frame { margin-top: 21px; }
+.history-archive-frame img { filter: grayscale(.9) sepia(.06) contrast(1.08); height: 100%; object-fit: cover; transition: filter 260ms ease, transform 700ms cubic-bezier(.2,.8,.2,1); width: 100%; }
+.history-archive-track figure:hover img { filter: grayscale(.35) sepia(.04) contrast(1.04); transform: scale(1.015); }
+.history-archive-track figure:nth-child(1) img, .history-archive-track figure:nth-child(4) img { object-fit: contain; }
+.history-archive-track figure:nth-child(2) img { object-position: center 54%; }
+.history-archive-track figure:nth-child(3) img { object-position: center 57%; }
+.history-archive-track figcaption { display: grid; gap: 2px; padding: 13px 7px 0 0; }
+.history-archive-track figcaption span { color: var(--brass-dark); font-family: var(--code); font-size: 10.5px; text-transform: uppercase; }
+.history-archive-track figcaption b { font-family: var(--display); font-size: 21px; font-weight: 400; line-height: 1; }
+.history-archive-track figcaption i { color: var(--ink-soft); font-family: var(--code); font-size: 10px; font-style: normal; text-transform: uppercase; }
+.history-genealogy-thesis { align-items: center; border-top: 1px solid rgba(16,18,18,.32); display: grid; gap: 18px; grid-template-columns: .9fr 1.5fr; }
+.history-genealogy-thesis span { color: var(--ink-soft); font-family: var(--code); font-size: 11px; text-transform: uppercase; }
+.history-genealogy-thesis b { font-family: var(--display); font-size: 23px; font-weight: 400; line-height: 1.02; }
+
+.context-theory { background: #d9dcda; color: var(--ink); }
+.context-theory .context-panel-head { border-color: rgba(16,18,18,.32); }
+.context-theory .context-panel-head p { color: var(--ink-soft); }
+.theory-lineage { grid-template-columns: repeat(3,1fr); min-height: 0; overflow: hidden; }
+.theory-lineage figure { align-items: center; display: grid; grid-template-rows: minmax(0,1fr) 84px; height: 100%; min-height: 0; min-width: 0; overflow: hidden; padding: 18px 26px 0; }
+.theory-lineage figure + figure { border-left: 1px solid rgba(16,18,18,.25); }
+.book-object { align-items: center; display: flex; height: 100%; justify-content: center; min-height: 0; perspective: 900px; position: relative; }
+.book-object::after { background: rgba(16,18,18,.22); bottom: 7%; content: ""; filter: blur(12px); height: 8%; left: 25%; position: absolute; right: 25%; transform: skewX(-18deg); }
+.book-object img { box-shadow: 8px 12px 20px rgba(16,18,18,.22); height: min(76%,460px); object-fit: contain; position: relative; transform: rotateY(-3deg) rotateZ(-.8deg); width: auto; z-index: 2; }
+.theory-lineage figure:nth-child(2) .book-object img { transform: rotateY(2deg) rotateZ(.6deg); }
+.theory-lineage figure:nth-child(3) .book-object img { transform: rotateY(-2deg) rotateZ(.5deg); }
+.theory-lineage figcaption { border-top: 1px solid rgba(16,18,18,.25); display: grid; gap: 5px; padding-top: 12px; }
+.theory-lineage figcaption span { color: var(--ink-soft); font-family: var(--code); font-size: 13px; }
+.theory-lineage figcaption b { font-family: var(--display); font-size: 23px; font-weight: 400; }
+
+.context-tabs { bottom: 0; display: grid; grid-template-columns: repeat(3,1fr); height: 74px; left: 40px; position: absolute; right: 40px; z-index: 8; }
+.context-tabs button { align-items: center; background: transparent; border: 0; border-left: 1px solid rgba(248,248,244,.38); color: rgba(248,248,244,.62); display: grid; gap: 12px; grid-template-columns: 35px 1fr; padding: 0 18px; text-align: left; }
+.context-tabs button:last-child { border-right: 1px solid rgba(248,248,244,.38); }
+.context-tabs span { color: var(--brass); font-family: var(--code); font-size: 13px; }
+.context-tabs b { font-family: var(--code); font-size: 14px; font-weight: 400; text-transform: uppercase; }
+.context-tabs button:hover, .context-tabs button.is-selected { background: var(--paper-bright); color: var(--ink); }
+
+@media (max-width: 1180px) {
+  .context-heading h2 { font-size: 43px; }
+  .context-stage { top: 165px; }
+  .context-index-trigger { top: 78px; }
+  .context-panel-head p { display: none; }
+  .practice-lineage figcaption b { font-size: 21px; }
+  .practice-lineage figcaption i, .practice-lineage figcaption span, .theory-lineage figcaption span { font-size: 11px; }
+  .history-archive-track { gap: 11px; }
+  .history-archive-track figcaption span, .history-archive-track figcaption i { font-size: 8px; }
+  .history-archive-track figcaption b { font-size: 18px; }
+  .history-genealogy-thesis b { font-size: 19px; }
+}
+
+@media (max-width: 760px) {
+  .context-spread { min-height: 980px; }
+  .context-heading { left: 14px; top: 66px; }
+  .context-heading h2 { font-size: 34px; }
+  .context-index-trigger { display: none; }
+  .context-stage { bottom: 62px; left: 14px; right: 14px; top: 155px; }
+  .context-panel { grid-template-rows: 50px minmax(0,1fr); }
+  .context-panel-head span { font-size: 21px; }
+  .practice-lineage { grid-template-columns: 1fr; overflow-y: auto; }
+  .practice-lineage figure { min-height: 225px; }
+  .practice-lineage figure + figure { border-left: 0; border-top: 1px solid rgba(248,248,244,.34); }
+  .history-genealogy { grid-template-rows: auto auto auto; overflow-y: auto; padding: 0 12px; }
+  .history-genealogy-note { min-height: 42px; }
+  .history-genealogy-note b { display: none; }
+  .history-archive-track { grid-template-columns: 1fr; }
+  .history-archive-track::before { display: none; }
+  .history-archive-track figure { grid-template-rows: 190px auto; min-height: 265px; }
+  .history-archive-track figure::after { display: none; }
+  .history-archive-track figure .history-archive-frame { margin-top: 0; }
+  .history-genealogy-thesis { grid-template-columns: 1fr; min-height: 108px; padding: 14px 0; }
+  .theory-lineage { grid-template-columns: 1fr; overflow-y: auto; }
+  .theory-lineage figure { grid-template-columns: 42% 1fr; grid-template-rows: 230px; padding: 12px; }
+  .theory-lineage figure + figure { border-left: 0; border-top: 1px solid rgba(16,18,18,.25); }
+  .theory-lineage figcaption { border-left: 1px solid rgba(16,18,18,.25); border-top: 0; padding: 16px; }
+  .book-object img { height: 82%; }
+  .context-tabs { height: 62px; left: 14px; right: 14px; }
+  .context-tabs button { display: block; padding: 7px; text-align: center; }
+  .context-tabs span { display: block; font-size: 10px; margin-bottom: 5px; }
+  .context-tabs b { font-size: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
